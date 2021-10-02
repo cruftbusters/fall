@@ -1,5 +1,13 @@
+import KDBush from 'kdbush'
+import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
+
+const index = new KDBush(
+  snapshot.content.locations,
+  (l) => l.lon,
+  (l) => l.lat,
+)
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -15,6 +23,19 @@ function App() {
     const right = Math.max(...lons)
     const top = Math.max(...lats)
     const bottom = Math.min(...lats)
+    for (let x = 0; x < window.innerWidth; x++) {
+      for (let y = 0; y < window.innerHeight; y++) {
+        const [nearest] = geokdbush.around(
+          index,
+          (x / window.innerWidth) * (right - left) + left,
+          (-y / window.innerHeight) * (top - bottom) + top,
+          1,
+        )
+        const value = (parseInt(nearest.leaves) / 6) * 255
+        context.fillStyle = `rgb(${value}, ${value}, ${value})`
+        context.fillRect(x, y, 1, 1)
+      }
+    }
 
     snapshot.content.locations.forEach(({ lat, lon }) => {
       context.beginPath()
