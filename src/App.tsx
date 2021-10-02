@@ -5,8 +5,8 @@ import snapshot from './latest.json'
 
 const index = new KDBush(
   snapshot.content.locations,
-  (l) => l.lon,
-  (l) => l.lat,
+  (it) => it.lon,
+  (it) => it.lat,
 )
 
 function lookupRgb(value: string) {
@@ -28,25 +28,24 @@ function lookupRgb(value: string) {
   }
 }
 
-interface LatLon {
-  lat: number
-  lon: number
-}
-
 class ScreenProjector {
   left: number = 0
   right: number = 0
   top: number = 0
   bottom: number = 0
 
-  static fromLatLons(latLons: Array<LatLon>) {
-    const lons = latLons.map((it) => it.lon)
-    const lats = latLons.map((it) => it.lat)
+  static fromCoordinates<CoordinateType>(
+    coordinates: Array<CoordinateType>,
+    fx: (coordinate: CoordinateType) => number,
+    fy: (coordinate: CoordinateType) => number,
+  ) {
+    const xs = coordinates.map(fx)
+    const ys = coordinates.map(fy)
     const screenProjector = new ScreenProjector()
-    screenProjector.left = Math.min(...lons)
-    screenProjector.right = Math.max(...lons)
-    screenProjector.top = Math.max(...lats)
-    screenProjector.bottom = Math.min(...lats)
+    screenProjector.left = Math.min(...xs)
+    screenProjector.right = Math.max(...xs)
+    screenProjector.top = Math.max(...ys)
+    screenProjector.bottom = Math.min(...ys)
     return screenProjector
   }
 
@@ -73,8 +72,10 @@ function App() {
     const context = canvas.getContext('2d')!
     context.fillStyle = '#004400'
 
-    const screenProjector = ScreenProjector.fromLatLons(
+    const screenProjector = ScreenProjector.fromCoordinates(
       snapshot.content.locations,
+      (it) => it.lon,
+      (it) => it.lat,
     )
 
     const pixelSize = 5
