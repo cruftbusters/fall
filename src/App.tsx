@@ -9,6 +9,18 @@ const index = new KDBush(
   (l) => l.lat,
 )
 
+function lookupRgb(value :  string) {
+  switch(value) {
+    case '0': return 'rgb(255, 255, 255)'
+    case '1': return 'rgb(98, 138, 72)'
+    case '2': return 'rgb(175, 167, 61)'
+    case '3': return 'rgb(249, 203, 1)'
+    case '4': return 'rgb(250, 165, 38)'
+    case '5': return 'rgb(203, 52, 48)'
+    case '6': return 'rgb(113, 33, 26)'
+  }
+}
+
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
@@ -32,8 +44,7 @@ function App() {
           (-y / window.innerHeight) * (top - bottom) + top,
           1,
         )
-        const value = (parseInt(nearest.leaves) / 6) * 255
-        context.fillStyle = `rgb(${value}, ${value}, ${value})`
+        context.fillStyle = lookupRgb(nearest.leaves)!
         context.fillRect(x, y, pixelSize, pixelSize)
       }
     }
