@@ -9,15 +9,22 @@ const index = new KDBush(
   (l) => l.lat,
 )
 
-function lookupRgb(value :  string) {
-  switch(value) {
-    case '0': return 'rgb(255, 255, 255)'
-    case '1': return 'rgb(98, 138, 72)'
-    case '2': return 'rgb(175, 167, 61)'
-    case '3': return 'rgb(249, 203, 1)'
-    case '4': return 'rgb(250, 165, 38)'
-    case '5': return 'rgb(203, 52, 48)'
-    case '6': return 'rgb(113, 33, 26)'
+function lookupRgb(value: string) {
+  switch (value) {
+    case '0':
+      return 'rgb(255, 255, 255)'
+    case '1':
+      return 'rgb(98, 138, 72)'
+    case '2':
+      return 'rgb(175, 167, 61)'
+    case '3':
+      return 'rgb(249, 203, 1)'
+    case '4':
+      return 'rgb(250, 165, 38)'
+    case '5':
+      return 'rgb(203, 52, 48)'
+    case '6':
+      return 'rgb(113, 33, 26)'
   }
 }
 
@@ -36,8 +43,8 @@ function App() {
     const top = Math.max(...lats)
     const bottom = Math.min(...lats)
     const pixelSize = 5
-    for (let x = 0; x < window.innerWidth; x+=pixelSize) {
-      for (let y = 0; y < window.innerHeight; y+=pixelSize) {
+    for (let x = 0; x < window.innerWidth; x += pixelSize) {
+      for (let y = 0; y < window.innerHeight; y += pixelSize) {
         const [nearest] = geokdbush.around(
           index,
           (x / window.innerWidth) * (right - left) + left,
