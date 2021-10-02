@@ -23,8 +23,9 @@ function App() {
     const right = Math.max(...lons)
     const top = Math.max(...lats)
     const bottom = Math.min(...lats)
-    for (let x = 0; x < window.innerWidth; x++) {
-      for (let y = 0; y < window.innerHeight; y++) {
+    const pixelSize = 5
+    for (let x = 0; x < window.innerWidth; x+=pixelSize) {
+      for (let y = 0; y < window.innerHeight; y+=pixelSize) {
         const [nearest] = geokdbush.around(
           index,
           (x / window.innerWidth) * (right - left) + left,
@@ -33,7 +34,7 @@ function App() {
         )
         const value = (parseInt(nearest.leaves) / 6) * 255
         context.fillStyle = `rgb(${value}, ${value}, ${value})`
-        context.fillRect(x, y, 1, 1)
+        context.fillRect(x, y, pixelSize, pixelSize)
       }
     }
 
