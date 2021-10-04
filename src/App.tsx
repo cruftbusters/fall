@@ -61,7 +61,10 @@ function drawFallLayer<CoordinateType>(
   for (let xScreen = 0; xScreen < screenSize.x; xScreen += pixelSize) {
     for (let yScreen = 0; yScreen < screenSize.y; yScreen += pixelSize) {
       const [xWorld, yWorld] =
-        screenProjector.screenPointToCoordinatePoint(xScreen, yScreen)
+        screenProjector.screenPointToCoordinatePoint(
+          xScreen + pixelSize / 2,
+          yScreen + pixelSize / 2,
+        )
       const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
       context.fillStyle = lookupRgb(nearest.properties.leaves)!
       context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
