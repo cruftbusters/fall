@@ -25,9 +25,7 @@ function App() {
   const screenSize = useScreenSize()
   useEffect(() => {
     if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')!
-    context.fillStyle = '#004400'
+    const context = canvasRef.current.getContext('2d')!
 
     screenProjector.setScreenSize(screenSize)
 
