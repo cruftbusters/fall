@@ -38,8 +38,8 @@ function lookupRgb(value: string) {
 }
 
 class ScreenProjector {
-  left: number = 0
-  top: number = 0
+  xCenter: number = 0
+  yCenter: number = 0
   zoom: number = 0
 
   static fromCoordinates<CoordinateType>(
@@ -53,23 +53,32 @@ class ScreenProjector {
     const right = Math.max(...xs)
     const top = Math.max(...ys)
     const bottom = Math.min(...ys)
-    const zoom = Math.max(
-      (right - left) / window.innerWidth,
-      (top - bottom) / window.innerHeight,
+    const zoom = Math.pow(
+      Math.max(
+        (right - left) / window.innerWidth,
+        (top - bottom) / window.innerHeight,
+      ),
+      0.975,
     )
     const screenProjector = new ScreenProjector()
-    screenProjector.left = left
-    screenProjector.top = top
+    screenProjector.xCenter = (right - left) / 2 + left
+    screenProjector.yCenter = (top - bottom) / 2 + bottom
     screenProjector.zoom = zoom
     return screenProjector
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
-    return [x * this.zoom + this.left, -y * this.zoom + this.top]
+    return [
+      (x - window.innerWidth / 2) * this.zoom + this.xCenter,
+      (-y + window.innerHeight / 2) * this.zoom + this.yCenter,
+    ]
   }
 
   coordinatePointToScreenPoint(a: number, b: number) {
-    return [(a - this.left) / this.zoom, (-b + this.top) / this.zoom]
+    return [
+      (a - this.xCenter) / this.zoom + window.innerWidth / 2,
+      (-b + this.yCenter) / this.zoom + window.innerHeight / 2,
+    ]
   }
 }
 
