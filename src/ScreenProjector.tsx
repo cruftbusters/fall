@@ -6,6 +6,7 @@ export class ScreenProjector<CoordinateType> {
   screenSize: Vector2
 
   constructor(
+    screenSize: Vector2,
     coordinates: Array<CoordinateType>,
     fx: (coordinate: CoordinateType) => number,
     fy: (coordinate: CoordinateType) => number,
@@ -16,8 +17,6 @@ export class ScreenProjector<CoordinateType> {
     const right = Math.max(...xs)
     const top = Math.max(...ys)
     const bottom = Math.min(...ys)
-
-    const screenSize = { x: window.innerWidth, y: window.innerHeight }
 
     this.center = {
       x: (right - left) / 2 + left,

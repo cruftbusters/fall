@@ -12,6 +12,7 @@ const index = new KDBush(
 )
 
 const screenProjector = new ScreenProjector(
+  { x: window.innerWidth, y: window.innerHeight },
   snapshot.features,
   (it) => it.geometry.coordinates[0],
   (it) => it.geometry.coordinates[1],
