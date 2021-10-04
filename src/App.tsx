@@ -44,8 +44,8 @@ function App() {
     context.fillStyle = '#004400'
 
     const pixelSize = 5
-    for (let x = 0; x < window.innerWidth; x += pixelSize) {
-      for (let y = 0; y < window.innerHeight; y += pixelSize) {
+    for (let x = 0; x < screenProjector.screenSize.x; x += pixelSize) {
+      for (let y = 0; y < screenProjector.screenSize.y; y += pixelSize) {
         const [lon, lat] = screenProjector.screenPointToCoordinatePoint(
           x,
           y,
@@ -75,8 +75,8 @@ function App() {
   return (
     <canvas
       ref={canvasRef}
-      width={window.innerWidth}
-      height={window.innerHeight}
+      width={screenProjector.screenSize.x}
+      height={screenProjector.screenSize.y}
       style={{
         display: 'block',
         width: '100%',
