@@ -28,9 +28,13 @@ function lookupRgb(value: string) {
   }
 }
 
+interface Vector2 {
+  x: number
+  y: number
+}
+
 class ScreenProjector {
-  xCenter: number = 0
-  yCenter: number = 0
+  center: Vector2 = { x: 0, y: 0 }
   zoom: number = 0
 
   static fromCoordinates<CoordinateType>(
@@ -52,23 +56,25 @@ class ScreenProjector {
       0.975,
     )
     const screenProjector = new ScreenProjector()
-    screenProjector.xCenter = (right - left) / 2 + left
-    screenProjector.yCenter = (top - bottom) / 2 + bottom
+    screenProjector.center = {
+      x: (right - left) / 2 + left,
+      y: (top - bottom) / 2 + bottom,
+    }
     screenProjector.zoom = zoom
     return screenProjector
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
     return [
-      (x - window.innerWidth / 2) * this.zoom + this.xCenter,
-      (-y + window.innerHeight / 2) * this.zoom + this.yCenter,
+      (x - window.innerWidth / 2) * this.zoom + this.center.x,
+      (-y + window.innerHeight / 2) * this.zoom + this.center.y,
     ]
   }
 
   coordinatePointToScreenPoint(a: number, b: number) {
     return [
-      (a - this.xCenter) / this.zoom + window.innerWidth / 2,
-      (-b + this.yCenter) / this.zoom + window.innerHeight / 2,
+      (a - this.center.x) / this.zoom + window.innerWidth / 2,
+      (-b + this.center.y) / this.zoom + window.innerHeight / 2,
     ]
   }
 }
