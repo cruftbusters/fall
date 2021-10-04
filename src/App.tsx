@@ -3,8 +3,17 @@ import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
 
+const locations = snapshot.features.map(
+  ({
+    geometry: {
+      coordinates: [lon, lat],
+    },
+    properties: { leaves },
+  }) => ({ lon, lat, leaves }),
+)
+
 const index = new KDBush(
-  snapshot.content.locations,
+  locations,
   (it) => it.lon,
   (it) => it.lat,
 )
@@ -76,7 +85,7 @@ function App() {
     context.fillStyle = '#004400'
 
     const screenProjector = ScreenProjector.fromCoordinates(
-      snapshot.content.locations,
+      locations,
       (it) => it.lon,
       (it) => it.lat,
     )
@@ -94,7 +103,7 @@ function App() {
       }
     }
 
-    snapshot.content.locations.forEach(({ lat, lon }) => {
+    locations.forEach(({ lat, lon }) => {
       context.beginPath()
       const [x, y] = screenProjector.coordinatePointToScreenPoint(lon, lat)
       context.arc(x, y, 5, 0, 2 * Math.PI)
