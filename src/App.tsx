@@ -10,6 +10,12 @@ const index = new KDBush(
   (it) => it.geometry.coordinates[1],
 )
 
+const screenProjector = new ScreenProjector(
+  snapshot.features,
+  (it) => it.geometry.coordinates[0],
+  (it) => it.geometry.coordinates[1],
+)
+
 function lookupRgb(value: string) {
   switch (value) {
     case '0':
@@ -36,12 +42,6 @@ function App() {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')!
     context.fillStyle = '#004400'
-
-    const screenProjector = new ScreenProjector(
-      snapshot.features,
-      (it) => it.geometry.coordinates[0],
-      (it) => it.geometry.coordinates[1],
-    )
 
     const pixelSize = 5
     for (let x = 0; x < window.innerWidth; x += pixelSize) {
