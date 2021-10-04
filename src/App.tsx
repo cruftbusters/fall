@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
 import { ScreenProjector } from './ScreenProjector'
 import useScreenSize from './useScreenSize'
+import { Vector2 } from './Types'
 
 const index = new KDBush(
   snapshot.features,
@@ -17,6 +18,58 @@ const screenProjector = new ScreenProjector(
   (it) => it.geometry.coordinates[0],
   (it) => it.geometry.coordinates[1],
 )
+
+function App() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const detailTimeoutRef = useRef<NodeJS.Timeout>()
+  const screenSize = useScreenSize()
+  useEffect(() => {
+    if (!canvasRef.current) return
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')!
+    context.fillStyle = '#004400'
+
+    screenProjector.setScreenSize(screenSize)
+
+    drawFallLayer(context, screenProjector, screenSize, 25)
+    drawStationLayer(context, screenProjector)
+
+    if (detailTimeoutRef.current) clearTimeout(detailTimeoutRef.current)
+    detailTimeoutRef.current = setTimeout(() => {
+      drawFallLayer(context, screenProjector, screenSize, 5)
+      drawStationLayer(context, screenProjector)
+    }, 125)
+  }, [canvasRef, screenSize])
+  return (
+    <canvas
+      ref={canvasRef}
+      width={screenSize.x}
+      height={screenSize.y}
+      style={{
+        display: 'block',
+        width: '100%',
+        height: '100%',
+      }}
+    />
+  )
+}
+
+function drawFallLayer<CoordinateType>(
+  context: CanvasRenderingContext2D,
+  screenProjector: ScreenProjector<CoordinateType>,
+  screenSize: Vector2,
+  pixelSize: number,
+) {
+  for (let xScreen = 0; xScreen < screenSize.x; xScreen += pixelSize) {
+    for (let yScreen = 0; yScreen < screenSize.y; yScreen += pixelSize) {
+      const [xWorld, yWorld] =
+        screenProjector.screenPointToCoordinatePoint(xScreen, yScreen)
+      const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
+      context.fillStyle = lookupRgb(nearest.properties.leaves)!
+      context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
+    }
+  }
+}
 
 function lookupRgb(value: string) {
   switch (value) {
@@ -37,53 +90,22 @@ function lookupRgb(value: string) {
   }
 }
 
-function App() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const screenSize = useScreenSize()
-  useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')!
-    context.fillStyle = '#004400'
-
-    screenProjector.setScreenSize(screenSize)
-
-    const pixelSize = 5
-    for (let xScreen = 0; xScreen < screenSize.x; xScreen += pixelSize) {
-      for (let yScreen = 0; yScreen < screenSize.y; yScreen += pixelSize) {
-        const [xWorld, yWorld] =
-          screenProjector.screenPointToCoordinatePoint(xScreen, yScreen)
-        const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
-        context.fillStyle = lookupRgb(nearest.properties.leaves)!
-        context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
-      }
-    }
-
-    snapshot.features.forEach(
-      ({
-        geometry: {
-          coordinates: [xWorld, yWorld],
-        },
-      }) => {
-        context.beginPath()
-        const [xScreen, yScreen] =
-          screenProjector.coordinatePointToScreenPoint(xWorld, yWorld)
-        context.arc(xScreen, yScreen, 5, 0, 2 * Math.PI)
-        context.stroke()
+function drawStationLayer<CoordinateType>(
+  context: CanvasRenderingContext2D,
+  screenProjector: ScreenProjector<CoordinateType>,
+) {
+  snapshot.features.forEach(
+    ({
+      geometry: {
+        coordinates: [xWorld, yWorld],
       },
-    )
-  }, [canvasRef, screenSize])
-  return (
-    <canvas
-      ref={canvasRef}
-      width={screenSize.x}
-      height={screenSize.y}
-      style={{
-        display: 'block',
-        width: '100%',
-        height: '100%',
-      }}
-    />
+    }) => {
+      context.beginPath()
+      const [xScreen, yScreen] =
+        screenProjector.coordinatePointToScreenPoint(xWorld, yWorld)
+      context.arc(xScreen, yScreen, 5, 0, 2 * Math.PI)
+      context.stroke()
+    },
   )
 }
 
