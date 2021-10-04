@@ -53,7 +53,10 @@ class ScreenProjector {
     const right = Math.max(...xs)
     const top = Math.max(...ys)
     const bottom = Math.min(...ys)
-    const zoom = Math.max(right - left, top - bottom)
+    const zoom = Math.max(
+      (right - left) / window.innerWidth,
+      (top - bottom) / window.innerHeight,
+    )
     const screenProjector = new ScreenProjector()
     screenProjector.left = left
     screenProjector.top = top
@@ -62,17 +65,11 @@ class ScreenProjector {
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
-    return [
-      (x / window.innerWidth) * this.zoom + this.left,
-      (-y / window.innerHeight) * this.zoom + this.top,
-    ]
+    return [x * this.zoom + this.left, -y * this.zoom + this.top]
   }
 
   coordinatePointToScreenPoint(a: number, b: number) {
-    return [
-      ((a - this.left) / this.zoom) * window.innerWidth,
-      ((-b + this.top) / this.zoom) * window.innerHeight,
-    ]
+    return [(a - this.left) / this.zoom, (-b + this.top) / this.zoom]
   }
 }
 
