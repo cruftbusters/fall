@@ -36,6 +36,7 @@ interface Vector2 {
 class ScreenProjector<CoordinateType> {
   center: Vector2
   zoom: number
+  screenSize: Vector2
 
   constructor(
     coordinates: Array<CoordinateType>,
@@ -49,6 +50,8 @@ class ScreenProjector<CoordinateType> {
     const top = Math.max(...ys)
     const bottom = Math.min(...ys)
 
+    const screenSize = { x: window.innerWidth, y: window.innerHeight }
+
     this.center = {
       x: (right - left) / 2 + left,
       y: (top - bottom) / 2 + bottom,
@@ -56,24 +59,26 @@ class ScreenProjector<CoordinateType> {
 
     this.zoom = Math.pow(
       Math.max(
-        (right - left) / window.innerWidth,
-        (top - bottom) / window.innerHeight,
+        (right - left) / screenSize.x,
+        (top - bottom) / screenSize.y,
       ),
       0.975,
     )
+
+    this.screenSize = screenSize
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
     return [
-      (x - window.innerWidth / 2) * this.zoom + this.center.x,
-      (-y + window.innerHeight / 2) * this.zoom + this.center.y,
+      (x - this.screenSize.x / 2) * this.zoom + this.center.x,
+      (-y + this.screenSize.y / 2) * this.zoom + this.center.y,
     ]
   }
 
   coordinatePointToScreenPoint(a: number, b: number) {
     return [
-      (a - this.center.x) / this.zoom + window.innerWidth / 2,
-      (-b + this.center.y) / this.zoom + window.innerHeight / 2,
+      (a - this.center.x) / this.zoom + this.screenSize.x / 2,
+      (-b + this.center.y) / this.zoom + this.screenSize.y / 2,
     ]
   }
 }
