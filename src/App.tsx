@@ -44,30 +44,34 @@ function App() {
     context.fillStyle = '#004400'
 
     const pixelSize = 5
-    for (let x = 0; x < screenProjector.screenSize.x; x += pixelSize) {
-      for (let y = 0; y < screenProjector.screenSize.y; y += pixelSize) {
-        const [lon, lat] = screenProjector.screenPointToCoordinatePoint(
-          x,
-          y,
-        )
-        const [nearest] = geokdbush.around(index, lon, lat, 1)
+    for (
+      let xScreen = 0;
+      xScreen < screenProjector.screenSize.x;
+      xScreen += pixelSize
+    ) {
+      for (
+        let yScreen = 0;
+        yScreen < screenProjector.screenSize.y;
+        yScreen += pixelSize
+      ) {
+        const [xWorld, yWorld] =
+          screenProjector.screenPointToCoordinatePoint(xScreen, yScreen)
+        const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
         context.fillStyle = lookupRgb(nearest.properties.leaves)!
-        context.fillRect(x, y, pixelSize, pixelSize)
+        context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
       }
     }
 
     snapshot.features.forEach(
       ({
         geometry: {
-          coordinates: [lon, lat],
+          coordinates: [xWorld, yWorld],
         },
       }) => {
         context.beginPath()
-        const [x, y] = screenProjector.coordinatePointToScreenPoint(
-          lon,
-          lat,
-        )
-        context.arc(x, y, 5, 0, 2 * Math.PI)
+        const [xScreen, yScreen] =
+          screenProjector.coordinatePointToScreenPoint(xWorld, yWorld)
+        context.arc(xScreen, yScreen, 5, 0, 2 * Math.PI)
         context.stroke()
       },
     )
