@@ -3,19 +3,10 @@ import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
 
-const locations = snapshot.features.map(
-  ({
-    geometry: {
-      coordinates: [lon, lat],
-    },
-    properties: { leaves },
-  }) => ({ lon, lat, leaves }),
-)
-
 const index = new KDBush(
-  locations,
-  (it) => it.lon,
-  (it) => it.lat,
+  snapshot.features,
+  (it) => it.geometry.coordinates[0],
+  (it) => it.geometry.coordinates[1],
 )
 
 function lookupRgb(value: string) {
@@ -91,9 +82,9 @@ function App() {
     context.fillStyle = '#004400'
 
     const screenProjector = ScreenProjector.fromCoordinates(
-      locations,
-      (it) => it.lon,
-      (it) => it.lat,
+      snapshot.features,
+      (it) => it.geometry.coordinates[0],
+      (it) => it.geometry.coordinates[1],
     )
 
     const pixelSize = 5
@@ -104,17 +95,26 @@ function App() {
           y,
         )
         const [nearest] = geokdbush.around(index, lon, lat, 1)
-        context.fillStyle = lookupRgb(nearest.leaves)!
+        context.fillStyle = lookupRgb(nearest.properties.leaves)!
         context.fillRect(x, y, pixelSize, pixelSize)
       }
     }
 
-    locations.forEach(({ lat, lon }) => {
-      context.beginPath()
-      const [x, y] = screenProjector.coordinatePointToScreenPoint(lon, lat)
-      context.arc(x, y, 5, 0, 2 * Math.PI)
-      context.stroke()
-    })
+    snapshot.features.forEach(
+      ({
+        geometry: {
+          coordinates: [lon, lat],
+        },
+      }) => {
+        context.beginPath()
+        const [x, y] = screenProjector.coordinatePointToScreenPoint(
+          lon,
+          lat,
+        )
+        context.arc(x, y, 5, 0, 2 * Math.PI)
+        context.stroke()
+      },
+    )
   }, [canvasRef])
   return (
     <canvas
