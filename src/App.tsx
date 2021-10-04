@@ -33,11 +33,11 @@ interface Vector2 {
   y: number
 }
 
-class ScreenProjector {
-  center: Vector2 = { x: 0, y: 0 }
-  zoom: number = 0
+class ScreenProjector<CoordinateType> {
+  center: Vector2
+  zoom: number
 
-  static fromCoordinates<CoordinateType>(
+  constructor(
     coordinates: Array<CoordinateType>,
     fx: (coordinate: CoordinateType) => number,
     fy: (coordinate: CoordinateType) => number,
@@ -48,20 +48,19 @@ class ScreenProjector {
     const right = Math.max(...xs)
     const top = Math.max(...ys)
     const bottom = Math.min(...ys)
-    const zoom = Math.pow(
+
+    this.center = {
+      x: (right - left) / 2 + left,
+      y: (top - bottom) / 2 + bottom,
+    }
+
+    this.zoom = Math.pow(
       Math.max(
         (right - left) / window.innerWidth,
         (top - bottom) / window.innerHeight,
       ),
       0.975,
     )
-    const screenProjector = new ScreenProjector()
-    screenProjector.center = {
-      x: (right - left) / 2 + left,
-      y: (top - bottom) / 2 + bottom,
-    }
-    screenProjector.zoom = zoom
-    return screenProjector
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
@@ -87,7 +86,7 @@ function App() {
     const context = canvas.getContext('2d')!
     context.fillStyle = '#004400'
 
-    const screenProjector = ScreenProjector.fromCoordinates(
+    const screenProjector = new ScreenProjector(
       snapshot.features,
       (it) => it.geometry.coordinates[0],
       (it) => it.geometry.coordinates[1],
