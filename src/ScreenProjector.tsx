@@ -35,6 +35,10 @@ export class ScreenProjector<CoordinateType> {
     this.screenSize = screenSize
   }
 
+  setScreenSize(screenSize: Vector2) {
+    this.screenSize = screenSize
+  }
+
   screenPointToCoordinatePoint(x: number, y: number) {
     return [
       (x - this.screenSize.x / 2) * this.zoom + this.center.x,

@@ -3,6 +3,7 @@ import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
 import { ScreenProjector } from './ScreenProjector'
+import useScreenSize from './useScreenSize'
 
 const index = new KDBush(
   snapshot.features,
@@ -37,23 +38,18 @@ function lookupRgb(value: string) {
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const screenSize = useScreenSize()
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')!
     context.fillStyle = '#004400'
 
+    screenProjector.setScreenSize(screenSize)
+
     const pixelSize = 5
-    for (
-      let xScreen = 0;
-      xScreen < screenProjector.screenSize.x;
-      xScreen += pixelSize
-    ) {
-      for (
-        let yScreen = 0;
-        yScreen < screenProjector.screenSize.y;
-        yScreen += pixelSize
-      ) {
+    for (let xScreen = 0; xScreen < screenSize.x; xScreen += pixelSize) {
+      for (let yScreen = 0; yScreen < screenSize.y; yScreen += pixelSize) {
         const [xWorld, yWorld] =
           screenProjector.screenPointToCoordinatePoint(xScreen, yScreen)
         const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
@@ -75,12 +71,12 @@ function App() {
         context.stroke()
       },
     )
-  }, [canvasRef])
+  }, [canvasRef, screenSize])
   return (
     <canvas
       ref={canvasRef}
-      width={screenProjector.screenSize.x}
-      height={screenProjector.screenSize.y}
+      width={screenSize.x}
+      height={screenSize.y}
       style={{
         display: 'block',
         width: '100%',
