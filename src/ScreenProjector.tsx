@@ -1,4 +1,4 @@
-import { Vector2 } from './Types'
+import { Screen, Vector2 } from './Types'
 
 export function fromPoints<CoordinateType>(
   screenSize: Vector2,
@@ -13,12 +13,12 @@ export function fromPoints<CoordinateType>(
   const top = Math.max(...ys)
   const bottom = Math.min(...ys)
 
-  return new ScreenProjector(
-    {
+  return new ScreenProjector({
+    center: {
       x: (right - left) / 2 + left,
       y: (top - bottom) / 2 + bottom,
     },
-    Math.pow(
+    zoom: Math.pow(
       Math.max(
         (right - left) / screenSize.x,
         (top - bottom) / screenSize.y,
@@ -26,26 +26,22 @@ export function fromPoints<CoordinateType>(
       0.975,
     ),
     screenSize,
-  )
+  })
 }
 
 export class ScreenProjector {
-  center: Vector2
-  zoom: number
-  screenSize: Vector2
+  screen: Screen
 
-  constructor(center: Vector2, zoom: number, screenSize: Vector2) {
-    this.center = center
-    this.zoom = zoom
-    this.screenSize = screenSize
+  constructor(screen: Screen) {
+    this.screen = screen
   }
 
   setScreenSize(screenSize: Vector2) {
-    this.screenSize = screenSize
+    this.screen.screenSize = screenSize
   }
 
   screenPointToCoordinatePoint(x: number, y: number) {
-    const { screenSize, zoom, center } = this
+    const { screenSize, zoom, center } = this.screen
     return [
       (x - screenSize.x / 2) * zoom + center.x,
       (-y + screenSize.y / 2) * zoom + center.y,
@@ -53,7 +49,7 @@ export class ScreenProjector {
   }
 
   coordinatePointToScreenPoint(a: number, b: number) {
-    const { screenSize, zoom, center } = this
+    const { screenSize, zoom, center } = this.screen
     return [
       (a - center.x) / zoom + screenSize.x / 2,
       (-b + center.y) / zoom + screenSize.y / 2,
