@@ -2,7 +2,7 @@ import KDBush from 'kdbush'
 import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
-import { ScreenProjector } from './ScreenProjector'
+import { ScreenProjector, fromPoints } from './ScreenProjector'
 import useScreenSize from './useScreenSize'
 import { Vector2 } from './Types'
 import minnesota from './minnesota.json'
@@ -14,7 +14,7 @@ const index = new KDBush(
   (it) => it.geometry.coordinates[1],
 )
 
-const screenProjector = new ScreenProjector(
+const screenProjector = fromPoints(
   { x: window.innerWidth, y: window.innerHeight },
   snapshot.features,
   (it) => it.geometry.coordinates[0],
@@ -59,9 +59,9 @@ function App() {
   )
 }
 
-function drawFallLayer<CoordinateType>(
+function drawFallLayer(
   context: CanvasRenderingContext2D,
-  screenProjector: ScreenProjector<CoordinateType>,
+  screenProjector: ScreenProjector,
   screenSize: Vector2,
   pixelSize: number,
 ) {
@@ -100,9 +100,9 @@ function lookupRgb(value: string) {
   }
 }
 
-function drawStationLayer<CoordinateType>(
+function drawStationLayer(
   context: CanvasRenderingContext2D,
-  screenProjector: ScreenProjector<CoordinateType>,
+  screenProjector: ScreenProjector,
 ) {
   snapshot.features.forEach(
     ({
