@@ -1,13 +1,13 @@
 import { Screen, Vector2 } from './Types'
 
-export function screenFromPoints<CoordinateType>(
+export function screenFromPoints<PointType>(
   size: Vector2,
-  coordinates: Array<CoordinateType>,
-  fx: (coordinate: CoordinateType) => number,
-  fy: (coordinate: CoordinateType) => number,
+  points: Array<PointType>,
+  fx: (point: PointType) => number,
+  fy: (point: PointType) => number,
 ) {
-  const xs = coordinates.map(fx)
-  const ys = coordinates.map(fy)
+  const xs = points.map(fx)
+  const ys = points.map(fy)
   const left = Math.min(...xs)
   const right = Math.max(...xs)
   const top = Math.max(...ys)
@@ -26,7 +26,7 @@ export function screenFromPoints<CoordinateType>(
   } as Screen
 }
 
-export function screenPointToCoordinatePoint(
+export function screenPointToWorldPoint(
   { size: screenSize, zoom, center }: Screen,
   x: number,
   y: number,
@@ -37,7 +37,7 @@ export function screenPointToCoordinatePoint(
   ]
 }
 
-export function coordinatePointToScreenPoint(
+export function worldPointToScreenPoint(
   { size: screenSize, zoom, center }: Screen,
   a: number,
   b: number,

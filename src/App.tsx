@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
 import {
   screenFromPoints,
-  screenPointToCoordinatePoint,
-  coordinatePointToScreenPoint,
+  screenPointToWorldPoint,
+  worldPointToScreenPoint,
 } from './ScreenUtils'
 import { Screen } from './Types'
 import minnesota from './minnesota.json'
@@ -68,7 +68,7 @@ function drawFallLayer(
 ) {
   for (let xScreen = 0; xScreen < screen.size.x; xScreen += pixelSize) {
     for (let yScreen = 0; yScreen < screen.size.y; yScreen += pixelSize) {
-      const [xWorld, yWorld] = screenPointToCoordinatePoint(
+      const [xWorld, yWorld] = screenPointToWorldPoint(
         screen,
         xScreen + pixelSize / 2,
         yScreen + pixelSize / 2,
@@ -112,7 +112,7 @@ function drawStationLayer(
       },
     }) => {
       context.beginPath()
-      const [xScreen, yScreen] = coordinatePointToScreenPoint(
+      const [xScreen, yScreen] = worldPointToScreenPoint(
         screen,
         xWorld,
         yWorld,
