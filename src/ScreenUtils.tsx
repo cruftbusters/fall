@@ -27,23 +27,23 @@ export function screenFromPoints<PointType>(
 }
 
 export function screenPointToWorldPoint(
-  { size: screenSize, zoom, center }: Screen,
+  { size, zoom, center }: Screen,
   x: number,
   y: number,
 ) {
   return [
-    (x - screenSize.x / 2) * zoom + center.x,
-    (-y + screenSize.y / 2) * zoom + center.y,
+    (x - size.x / 2) * zoom + center.x,
+    (-y + size.y / 2) * zoom + center.y,
   ]
 }
 
 export function worldPointToScreenPoint(
-  { size: screenSize, zoom, center }: Screen,
+  { size, zoom, center }: Screen,
   a: number,
   b: number,
 ) {
   return [
-    (a - center.x) / zoom + screenSize.x / 2,
-    (-b + center.y) / zoom + screenSize.y / 2,
+    (a - center.x) / zoom + size.x / 2,
+    (-b + center.y) / zoom + size.y / 2,
   ]
 }
