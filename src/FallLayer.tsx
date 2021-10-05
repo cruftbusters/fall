@@ -7,6 +7,7 @@ import minnesota from './minnesota.json'
 import snapshot from './latest.json'
 import KDBush from 'kdbush'
 import geokdbush from 'geokdbush'
+import useScreen from './useScreen'
 
 const index = new KDBush(
   snapshot.features,
@@ -19,7 +20,8 @@ const minnesotaLoop = minnesota.features[0].geometry.coordinates[0][0] as [
   number,
 ][]
 
-export default function FallLayer({ screen }: { screen: Screen }) {
+export default function FallLayer() {
+  const screen = useScreen()
   const ref = useRef<HTMLCanvasElement>(null)
   const detailTimeoutRef = useRef<NodeJS.Timeout>()
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function FallLayer({ screen }: { screen: Screen }) {
     }, 125)
   }, [ref, screen])
 
-  return <CanvasLayer screen={screen} _ref={ref} />
+  return <CanvasLayer _ref={ref} />
 }
 
 function drawFallLayer(

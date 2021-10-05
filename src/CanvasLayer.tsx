@@ -1,15 +1,14 @@
 import { RefObject } from 'react'
-import { Screen } from './Types'
+import useScreen from './useScreen'
 
 export function CanvasLayer({
-  screen: {
-    size: { x: width, y: height },
-  },
   _ref,
 }: {
-  screen: Screen
   _ref: RefObject<HTMLCanvasElement>
 }) {
+  const {
+    size: { x: width, y: height },
+  } = useScreen()
   return (
     <canvas
       width={width}

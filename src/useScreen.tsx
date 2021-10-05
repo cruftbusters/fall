@@ -1,25 +1,35 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useContext, useEffect, useState } from 'react'
 import { Screen, Vector2 } from './Types'
+import { createContext } from 'react'
 
-export function useScreen(initialScreen: Screen) {
-  const [screen, setScreen] = useState(initialScreen)
-  const screenSize = useScreenSize()
-  useEffect(
-    () => setScreen((screen) => ({ ...screen, size: screenSize })),
-    [screenSize],
-  )
-  return screen
+const context = createContext<Screen>({
+  center: { x: 0, y: 0 },
+  zoom: 1,
+  size: { x: window.innerWidth, y: window.innerHeight },
+})
+
+export function ScreenProvider({
+  initialScreen,
+  children,
+}: {
+  initialScreen: Screen
+  children: ReactNode
+}) {
+  const [screen, setScreen] = useState<Screen>(initialScreen)
+  const size = useScreenSize()
+  useEffect(() => setScreen((screen) => ({ ...screen, size })), [size])
+  return <context.Provider value={screen} children={children} />
 }
 
 function useScreenSize() {
-  const [screenSize, setScreenSize] = useState<Vector2>({
+  const [size, setSize] = useState<Vector2>({
     x: window.innerWidth,
     y: window.innerHeight,
   })
 
   useEffect(() => {
     const onResize = () => {
-      setScreenSize({
+      setSize({
         x: window.innerWidth,
         y: window.innerHeight,
       })
@@ -28,5 +38,9 @@ function useScreenSize() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  return screenSize
+  return size
+}
+
+export default function useScreen() {
+  return useContext(context)
 }

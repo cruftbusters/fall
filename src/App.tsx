@@ -1,8 +1,8 @@
-import snapshot from './latest.json'
-import { screenFromPoints } from './ScreenUtils'
-import { useScreen } from './useScreen'
+import { ScreenProvider } from './useScreen'
 import FallLayer from './FallLayer'
 import StationLayer from './StationLayer'
+import { screenFromPoints } from './ScreenUtils'
+import snapshot from './latest.json'
 
 const initialScreen = screenFromPoints(
   { x: window.innerWidth, y: window.innerHeight },
@@ -12,12 +12,11 @@ const initialScreen = screenFromPoints(
 )
 
 function App() {
-  const screen = useScreen(initialScreen)
   return (
-    <>
-      <FallLayer screen={screen} />
-      <StationLayer screen={screen} />
-    </>
+    <ScreenProvider initialScreen={initialScreen}>
+      <FallLayer />
+      <StationLayer />
+    </ScreenProvider>
   )
 }
 

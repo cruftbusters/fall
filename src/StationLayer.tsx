@@ -3,16 +3,19 @@ import { Screen } from './Types'
 import { CanvasLayer } from './CanvasLayer'
 import { worldPointToScreenPoint } from './ScreenUtils'
 import snapshot from './latest.json'
+import useScreen from './useScreen'
 
-export default function StationLayer({ screen }: { screen: Screen }) {
+export default function StationLayer() {
+  const screen = useScreen()
   const ref = useRef<HTMLCanvasElement>(null)
+
   useEffect(() => {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
 
     drawStationLayer(context, screen)
   }, [ref, screen])
-  return <CanvasLayer screen={screen} _ref={ref} />
+  return <CanvasLayer _ref={ref} />
 }
 
 function drawStationLayer(
