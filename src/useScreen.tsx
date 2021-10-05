@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Vector2 } from './Types'
+import { Screen, Vector2 } from './Types'
 
-export default function useScreenSize() {
+export function useScreen(initialScreen: Screen) {
+  const [screen, setScreen] = useState(initialScreen)
+  const screenSize = useScreenSize()
+  useEffect(
+    () => setScreen((screen) => ({ ...screen, size: screenSize })),
+    [screenSize],
+  )
+  return screen
+}
+
+function useScreenSize() {
   const [screenSize, setScreenSize] = useState<Vector2>({
     x: window.innerWidth,
     y: window.innerHeight,

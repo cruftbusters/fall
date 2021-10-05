@@ -2,11 +2,15 @@ import KDBush from 'kdbush'
 import geokdbush from 'geokdbush'
 import { useEffect, useRef } from 'react'
 import snapshot from './latest.json'
-import { ScreenProjector, fromPoints } from './ScreenProjector'
-import useScreenSize from './useScreenSize'
-import { Vector2 } from './Types'
+import {
+  screenFromPoints,
+  screenPointToCoordinatePoint,
+  coordinatePointToScreenPoint,
+} from './ScreenUtils'
+import { Screen } from './Types'
 import minnesota from './minnesota.json'
 import { polygonContains } from 'd3-polygon'
+import { useScreen } from './useScreen'
 
 const index = new KDBush(
   snapshot.features,
@@ -14,7 +18,7 @@ const index = new KDBush(
   (it) => it.geometry.coordinates[1],
 )
 
-const screenProjector = fromPoints(
+const initialScreen = screenFromPoints(
   { x: window.innerWidth, y: window.innerHeight },
   snapshot.features,
   (it) => it.geometry.coordinates[0],
@@ -29,27 +33,25 @@ const minnesotaLoop = minnesota.features[0].geometry.coordinates[0][0] as [
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const detailTimeoutRef = useRef<NodeJS.Timeout>()
-  const screenSize = useScreenSize()
+  const screen = useScreen(initialScreen)
   useEffect(() => {
     if (!canvasRef.current) return
     const context = canvasRef.current.getContext('2d')!
 
-    screenProjector.setScreenSize(screenSize)
-
-    drawFallLayer(context, screenProjector, screenSize, 25)
-    drawStationLayer(context, screenProjector)
+    drawFallLayer(context, screen, 25)
+    drawStationLayer(context, screen)
 
     if (detailTimeoutRef.current) clearTimeout(detailTimeoutRef.current)
     detailTimeoutRef.current = setTimeout(() => {
-      drawFallLayer(context, screenProjector, screenSize, 5)
-      drawStationLayer(context, screenProjector)
+      drawFallLayer(context, screen, 5)
+      drawStationLayer(context, screen)
     }, 125)
-  }, [canvasRef, screenSize])
+  }, [canvasRef, screen])
   return (
     <canvas
       ref={canvasRef}
-      width={screenSize.x}
-      height={screenSize.y}
+      width={screen.size.x}
+      height={screen.size.y}
       style={{
         display: 'block',
         width: '100%',
@@ -61,17 +63,16 @@ function App() {
 
 function drawFallLayer(
   context: CanvasRenderingContext2D,
-  screenProjector: ScreenProjector,
-  screenSize: Vector2,
+  screen: Screen,
   pixelSize: number,
 ) {
-  for (let xScreen = 0; xScreen < screenSize.x; xScreen += pixelSize) {
-    for (let yScreen = 0; yScreen < screenSize.y; yScreen += pixelSize) {
-      const [xWorld, yWorld] =
-        screenProjector.screenPointToCoordinatePoint(
-          xScreen + pixelSize / 2,
-          yScreen + pixelSize / 2,
-        )
+  for (let xScreen = 0; xScreen < screen.size.x; xScreen += pixelSize) {
+    for (let yScreen = 0; yScreen < screen.size.y; yScreen += pixelSize) {
+      const [xWorld, yWorld] = screenPointToCoordinatePoint(
+        screen,
+        xScreen + pixelSize / 2,
+        yScreen + pixelSize / 2,
+      )
       if (polygonContains(minnesotaLoop, [xWorld, yWorld])) {
         const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
         context.fillStyle = lookupRgb(nearest.properties.leaves)!
@@ -102,7 +103,7 @@ function lookupRgb(value: string) {
 
 function drawStationLayer(
   context: CanvasRenderingContext2D,
-  screenProjector: ScreenProjector,
+  screen: Screen,
 ) {
   snapshot.features.forEach(
     ({
@@ -111,8 +112,11 @@ function drawStationLayer(
       },
     }) => {
       context.beginPath()
-      const [xScreen, yScreen] =
-        screenProjector.coordinatePointToScreenPoint(xWorld, yWorld)
+      const [xScreen, yScreen] = coordinatePointToScreenPoint(
+        screen,
+        xWorld,
+        yWorld,
+      )
       context.arc(xScreen, yScreen, 5, 0, 2 * Math.PI)
       context.stroke()
     },

@@ -6,5 +6,5 @@ export interface Vector2 {
 export interface Screen {
   center: Vector2
   zoom: number
-  screenSize: Vector2
+  size: Vector2
 }
