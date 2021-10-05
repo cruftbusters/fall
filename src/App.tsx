@@ -11,6 +11,7 @@ import { Screen } from './Types'
 import minnesota from './minnesota.json'
 import { polygonContains } from 'd3-polygon'
 import { useScreen } from './useScreen'
+import { CanvasLayer } from './CanvasLayer'
 
 const index = new KDBush(
   snapshot.features,
@@ -31,33 +32,34 @@ const minnesotaLoop = minnesota.features[0].geometry.coordinates[0][0] as [
 ][]
 
 function App() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const detailTimeoutRef = useRef<NodeJS.Timeout>()
   const screen = useScreen(initialScreen)
+
+  const fallLayerRef = useRef<HTMLCanvasElement>(null)
+  const detailTimeoutRef = useRef<NodeJS.Timeout>()
   useEffect(() => {
-    if (!canvasRef.current) return
-    const context = canvasRef.current.getContext('2d')!
+    if (!fallLayerRef.current) return
+    const context = fallLayerRef.current.getContext('2d')!
 
     drawFallLayer(context, screen, 25)
-    drawStationLayer(context, screen)
 
     if (detailTimeoutRef.current) clearTimeout(detailTimeoutRef.current)
     detailTimeoutRef.current = setTimeout(() => {
       drawFallLayer(context, screen, 5)
-      drawStationLayer(context, screen)
     }, 125)
-  }, [canvasRef, screen])
+  }, [fallLayerRef, screen])
+
+  const stationLayerRef = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    if (!stationLayerRef.current) return
+    const context = stationLayerRef.current.getContext('2d')!
+
+    drawStationLayer(context, screen)
+  }, [stationLayerRef, screen])
   return (
-    <canvas
-      ref={canvasRef}
-      width={screen.size.x}
-      height={screen.size.y}
-      style={{
-        display: 'block',
-        width: '100%',
-        height: '100%',
-      }}
-    />
+    <>
+      <CanvasLayer screen={screen} _ref={fallLayerRef} />
+      <CanvasLayer screen={screen} _ref={stationLayerRef} />
+    </>
   )
 }
 
