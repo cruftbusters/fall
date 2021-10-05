@@ -1,11 +1,12 @@
-import { RefObject } from 'react'
+import { CSSProperties, RefObject } from 'react'
 import useScreen from './useScreen'
 
 interface CanvasLayerProps {
   _ref: RefObject<HTMLCanvasElement>
+  style?: CSSProperties
 }
 
-export function CanvasLayer({ _ref }: CanvasLayerProps) {
+export function CanvasLayer({ _ref, style }: CanvasLayerProps) {
   const {
     size: { x: width, y: height },
   } = useScreen()
@@ -18,6 +19,7 @@ export function CanvasLayer({ _ref }: CanvasLayerProps) {
         width: '100%',
         height: '100%',
         position: 'absolute',
+        ...style,
       }}
       ref={_ref}
     />

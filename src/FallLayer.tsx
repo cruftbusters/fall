@@ -36,7 +36,7 @@ export default function FallLayer() {
     }, 125)
   }, [ref, screen])
 
-  return <CanvasLayer _ref={ref} />
+  return <CanvasLayer _ref={ref} style={{ opacity: 0.675 }} />
 }
 
 function drawFallLayer(
