@@ -5,6 +5,8 @@ import snapshot from './latest.json'
 import { ScreenProjector } from './ScreenProjector'
 import useScreenSize from './useScreenSize'
 import { Vector2 } from './Types'
+import minnesota from './minnesota.json'
+import { polygonContains } from 'd3-polygon'
 
 const index = new KDBush(
   snapshot.features,
@@ -18,6 +20,11 @@ const screenProjector = new ScreenProjector(
   (it) => it.geometry.coordinates[0],
   (it) => it.geometry.coordinates[1],
 )
+
+const minnesotaLoop = minnesota.features[0].geometry.coordinates[0][0] as [
+  number,
+  number,
+][]
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -65,9 +72,11 @@ function drawFallLayer<CoordinateType>(
           xScreen + pixelSize / 2,
           yScreen + pixelSize / 2,
         )
-      const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
-      context.fillStyle = lookupRgb(nearest.properties.leaves)!
-      context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
+      if (polygonContains(minnesotaLoop, [xWorld, yWorld])) {
+        const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
+        context.fillStyle = lookupRgb(nearest.properties.leaves)!
+        context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
+      }
     }
   }
 }
