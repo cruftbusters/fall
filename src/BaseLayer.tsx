@@ -31,16 +31,21 @@ async function drawBaseTile(
   const image = new Image()
   const [left, top] = worldPointToScreenPoint(
     screen,
-    (tx / n) * 360 - 180,
-    (Math.atan(Math.sinh(Math.PI * (1 - (2 * ty) / n))) * 180) / Math.PI,
+    xTileToLongitude(tx, n),
+    yTileToLatitude(ty, n),
   )
   const [right, bottom] = worldPointToScreenPoint(
     screen,
-    ((tx + 1) / n) * 360 - 180,
-    (Math.atan(Math.sinh(Math.PI * (1 - (2 * (ty + 1)) / n))) * 180) /
-      Math.PI,
+    xTileToLongitude(tx + 1, n),
+    yTileToLatitude(ty + 1, n),
   )
   image.onload = () =>
     context.drawImage(image, left, top, right - left, bottom - top)
   image.src = `https://mt0.google.com/vt/lyrs=y&hl=en&x=${tx}&y=${ty}&z=${tz}`
 }
+
+const xTileToLongitude = (xTile: number, n: number) =>
+  (xTile / n) * 360 - 180
+
+const yTileToLatitude = (yTile: number, n: number) =>
+  (Math.atan(Math.sinh(Math.PI * (1 - (2 * yTile) / n))) * 180) / Math.PI
