@@ -14,8 +14,8 @@ export function BaseLayer() {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
 
-    const [left, top] = screenPointToWorldPoint(screen, 0, 0)
-    const [right, bottom] = screenPointToWorldPoint(
+    const [worldLeft, worldTop] = screenPointToWorldPoint(screen, 0, 0)
+    const [worldRight, worldBottom] = screenPointToWorldPoint(
       screen,
       screen.size.x,
       screen.size.y,
@@ -24,63 +24,70 @@ export function BaseLayer() {
     const zoom = 7
     const n = Math.pow(2, zoom)
 
-    const slippyLeft = Math.floor(longitudeToXTile(left, n))
-    const slippyTop = Math.floor(latitudeToYTile(top, n))
-    const slippyRight = Math.ceil(longitudeToXTile(right, n))
-    const slippyBottom = Math.ceil(latitudeToYTile(bottom, n))
+    const [xTileStart, yTileStart] = latLonToTile(worldLeft, worldTop, n)
+    const [xTileEnd, yTileEnd] = latLonToTile(worldRight, worldBottom, n)
 
-    for (let x = slippyLeft; x <= slippyRight; x++) {
-      for (let y = slippyTop; y <= slippyBottom; y++) {
-        drawBaseTile(context, screen, x, y, zoom)
+    for (let xTile = xTileStart; xTile <= xTileEnd; xTile++) {
+      for (let yTile = yTileStart; yTile <= yTileEnd; yTile++) {
+        fetchBaseTile(xTile, yTile, zoom).then((image) => {
+          const [screenLeft, screenTop, screenRight, screenBottom] =
+            tileToScreenEnvelope(screen, xTile, yTile, n)
+          context.drawImage(
+            image,
+            screenLeft,
+            screenTop,
+            screenRight - screenLeft,
+            screenBottom - screenTop,
+          )
+        })
       }
     }
   }, [ref, screen])
   return <CanvasLayer _ref={ref} />
 }
 
-const longitudeToXTile = (longitude: number, n: number) =>
-  n * ((longitude + 180) / 360)
-
-const latitudeToYTile = (latitude: number, n: number) => {
+const latLonToTile = (longitude: number, latitude: number, n: number) => {
   const latitudeRadians = (latitude / 180) * Math.PI
-  return (
-    (n *
-      (1 -
-        Math.log(
-          Math.tan(latitudeRadians) + 1 / Math.cos(latitudeRadians),
-        ) /
-          Math.PI)) /
-    2
-  )
+  return [
+    Math.floor(n * ((longitude + 180) / 360)),
+    Math.floor(
+      (n *
+        (1 -
+          Math.log(
+            Math.tan(latitudeRadians) + 1 / Math.cos(latitudeRadians),
+          ) /
+            Math.PI)) /
+        2,
+    ),
+  ]
 }
 
-async function drawBaseTile(
-  context: CanvasRenderingContext2D,
+const fetchBaseTile = (tx: number, ty: number, tz: number) =>
+  new Promise<HTMLImageElement>((resolve) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.src = `https://mt0.google.com/vt/lyrs=y&hl=en&x=${tx}&y=${ty}&z=${tz}`
+  })
+
+const tileToScreenEnvelope = (
   screen: Screen,
-  tx: number,
-  ty: number,
-  tz: number,
-) {
-  const n = Math.pow(2, tz)
+  xTile: number,
+  yTile: number,
+  n: number,
+) => [
+  ...tileTopLeftToScreenPoint(screen, xTile, yTile, n),
+  ...tileTopLeftToScreenPoint(screen, xTile + 1, yTile + 1, n),
+]
 
-  const image = new Image()
-  const [left, top] = worldPointToScreenPoint(
+const tileTopLeftToScreenPoint = (
+  screen: Screen,
+  xTile: number,
+  yTile: number,
+  n: number,
+) =>
+  worldPointToScreenPoint(
     screen,
-    xTileToLongitude(tx, n),
-    yTileToLatitude(ty, n),
+    (xTile / n) * 360 - 180,
+    (Math.atan(Math.sinh(Math.PI * (1 - (2 * yTile) / n))) * 180) /
+      Math.PI,
   )
-  const [right, bottom] = worldPointToScreenPoint(
-    screen,
-    xTileToLongitude(tx + 1, n),
-    yTileToLatitude(ty + 1, n),
-  )
-  image.onload = () =>
-    context.drawImage(image, left, top, right - left, bottom - top)
-  image.src = `https://mt0.google.com/vt/lyrs=y&hl=en&x=${tx}&y=${ty}&z=${tz}`
-}
-
-const xTileToLongitude = (xTile: number, n: number) =>
-  (xTile / n) * 360 - 180
-
-const yTileToLatitude = (yTile: number, n: number) =>
-  (Math.atan(Math.sinh(Math.PI * (1 - (2 * yTile) / n))) * 180) / Math.PI
