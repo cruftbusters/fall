@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { CanvasLayer } from './CanvasLayer'
-import { worldPointToScreenPoint } from './ScreenUtils'
+import {
+  screenPointToWorldPoint,
+  worldPointToScreenPoint,
+} from './ScreenUtils'
 import { Screen } from './Types'
 import useScreen from './useScreen'
 
@@ -10,13 +13,45 @@ export function BaseLayer() {
   useEffect(() => {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
-    for (let x = 28; x < 33; x++) {
-      for (let y = 43; y < 48; y++) {
-        drawBaseTile(context, screen, x, y, 7)
+
+    const [left, top] = screenPointToWorldPoint(screen, 0, 0)
+    const [right, bottom] = screenPointToWorldPoint(
+      screen,
+      screen.size.x,
+      screen.size.y,
+    )
+
+    const zoom = 7
+    const n = Math.pow(2, zoom)
+
+    const slippyLeft = Math.floor(longitudeToXTile(left, n))
+    const slippyTop = Math.floor(latitudeToYTile(top, n))
+    const slippyRight = Math.ceil(longitudeToXTile(right, n))
+    const slippyBottom = Math.ceil(latitudeToYTile(bottom, n))
+
+    for (let x = slippyLeft; x <= slippyRight; x++) {
+      for (let y = slippyTop; y <= slippyBottom; y++) {
+        drawBaseTile(context, screen, x, y, zoom)
       }
     }
   }, [ref, screen])
   return <CanvasLayer _ref={ref} />
+}
+
+const longitudeToXTile = (longitude: number, n: number) =>
+  n * ((longitude + 180) / 360)
+
+const latitudeToYTile = (latitude: number, n: number) => {
+  const latitudeRadians = (latitude / 180) * Math.PI
+  return (
+    (n *
+      (1 -
+        Math.log(
+          Math.tan(latitudeRadians) + 1 / Math.cos(latitudeRadians),
+        ) /
+          Math.PI)) /
+    2
+  )
 }
 
 async function drawBaseTile(
