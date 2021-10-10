@@ -3,7 +3,7 @@ export interface Vector2 {
   y: number
 }
 
-export interface Screen {
+export interface Pane {
   center: Vector2
   zoom: number
   size: Vector2

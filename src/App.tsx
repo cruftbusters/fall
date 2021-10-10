@@ -2,10 +2,10 @@ import FallLayer from './layer/FallLayer'
 import StationLayer from './layer/StationLayer'
 import snapshot from './layer/latest.json'
 import { BaseLayer } from './layer/BaseLayer'
-import { ScreenProvider } from './useScreen'
-import { screenFromPoints } from './ScreenUtils'
+import { PaneProvider } from './usePane'
+import { paneFromPoints } from './PaneUtils'
 
-const initialScreen = screenFromPoints(
+const initialPane = paneFromPoints(
   { x: window.innerWidth, y: window.innerHeight },
   snapshot.features,
   (it) => it.geometry.coordinates[0],
@@ -14,11 +14,11 @@ const initialScreen = screenFromPoints(
 
 function App() {
   return (
-    <ScreenProvider initialScreen={initialScreen}>
+    <PaneProvider initialPane={initialPane}>
       <BaseLayer />
       <FallLayer />
       <StationLayer />
-    </ScreenProvider>
+    </PaneProvider>
   )
 }
 

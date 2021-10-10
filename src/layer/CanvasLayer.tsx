@@ -1,4 +1,4 @@
-import useScreen from '../useScreen'
+import usePane from '../usePane'
 import { CSSProperties, RefObject } from 'react'
 
 interface CanvasLayerProps {
@@ -9,7 +9,7 @@ interface CanvasLayerProps {
 export function CanvasLayer({ _ref, style }: CanvasLayerProps) {
   const {
     size: { x: width, y: height },
-  } = useScreen()
+  } = usePane()
   return (
     <canvas
       width={width}

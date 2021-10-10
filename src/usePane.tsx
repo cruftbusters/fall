@@ -1,27 +1,27 @@
+import { Pane, Vector2 } from './Types'
 import { ReactNode, useContext, useEffect, useState } from 'react'
-import { Screen, Vector2 } from './Types'
 import { createContext } from 'react'
 
-const context = createContext<Screen>({
+const context = createContext<Pane>({
   center: { x: 0, y: 0 },
   zoom: 1,
   size: { x: window.innerWidth, y: window.innerHeight },
 })
 
-export function ScreenProvider({
-  initialScreen,
+export function PaneProvider({
+  initialPane,
   children,
 }: {
-  initialScreen: Screen
+  initialPane: Pane
   children: ReactNode
 }) {
-  const [screen, setScreen] = useState<Screen>(initialScreen)
-  const size = useScreenSize()
-  useEffect(() => setScreen((screen) => ({ ...screen, size })), [size])
-  return <context.Provider value={screen} children={children} />
+  const [pane, setPane] = useState<Pane>(initialPane)
+  const size = useWindowSize()
+  useEffect(() => setPane((pane) => ({ ...pane, size })), [size])
+  return <context.Provider value={pane} children={children} />
 }
 
-function useScreenSize() {
+function useWindowSize() {
   const [size, setSize] = useState<Vector2>({
     x: window.innerWidth,
     y: window.innerHeight,
@@ -41,6 +41,6 @@ function useScreenSize() {
   return size
 }
 
-export default function useScreen() {
+export default function usePane() {
   return useContext(context)
 }

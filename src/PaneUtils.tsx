@@ -1,6 +1,6 @@
-import { Screen, Vector2 } from './Types'
+import { Pane, Vector2 } from './Types'
 
-export function screenFromPoints<PointType>(
+export function paneFromPoints<PointType>(
   size: Vector2,
   points: Array<PointType>,
   fx: (point: PointType) => number,
@@ -23,11 +23,11 @@ export function screenFromPoints<PointType>(
       0.975,
     ),
     size,
-  } as Screen
+  } as Pane
 }
 
-export function screenPointToWorldPoint(
-  { size, zoom, center }: Screen,
+export function panePointToWorldPoint(
+  { size, zoom, center }: Pane,
   x: number,
   y: number,
 ) {
@@ -37,8 +37,8 @@ export function screenPointToWorldPoint(
   ]
 }
 
-export function worldPointToScreenPoint(
-  { size, zoom, center }: Screen,
+export function worldPointToPanePoint(
+  { size, zoom, center }: Pane,
   a: number,
   b: number,
 ) {

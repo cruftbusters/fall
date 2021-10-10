@@ -1,27 +1,24 @@
 import snapshot from './latest.json'
-import useScreen from '../useScreen'
+import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Screen } from '../Types'
+import { Pane } from '../Types'
 import { useEffect, useRef } from 'react'
-import { worldPointToScreenPoint } from '../ScreenUtils'
+import { worldPointToPanePoint } from '../PaneUtils'
 
 export default function StationLayer() {
-  const screen = useScreen()
+  const pane = usePane()
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
 
-    drawStationLayer(context, screen)
-  }, [ref, screen])
+    drawStationLayer(context, pane)
+  }, [ref, pane])
   return <CanvasLayer _ref={ref} />
 }
 
-function drawStationLayer(
-  context: CanvasRenderingContext2D,
-  screen: Screen,
-) {
+function drawStationLayer(context: CanvasRenderingContext2D, pane: Pane) {
   snapshot.features.forEach(
     ({
       geometry: {
@@ -29,12 +26,8 @@ function drawStationLayer(
       },
     }) => {
       context.beginPath()
-      const [xScreen, yScreen] = worldPointToScreenPoint(
-        screen,
-        xWorld,
-        yWorld,
-      )
-      context.arc(xScreen, yScreen, 5, 0, 2 * Math.PI)
+      const [xPane, yPane] = worldPointToPanePoint(pane, xWorld, yWorld)
+      context.arc(xPane, yPane, 5, 0, 2 * Math.PI)
       context.stroke()
     },
   )

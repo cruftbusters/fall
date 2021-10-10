@@ -2,11 +2,11 @@ import KDBush from 'kdbush'
 import geokdbush from 'geokdbush'
 import minnesota from './minnesota.json'
 import snapshot from './latest.json'
-import useScreen from '../useScreen'
+import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Screen } from '../Types'
+import { Pane } from '../Types'
+import { panePointToWorldPoint } from '../PaneUtils'
 import { polygonContains } from 'd3-polygon'
-import { screenPointToWorldPoint } from '../ScreenUtils'
 import { useEffect, useRef } from 'react'
 
 const index = new KDBush(
@@ -21,40 +21,40 @@ const minnesotaLoop = minnesota.features[0].geometry.coordinates[0][0] as [
 ][]
 
 export default function FallLayer() {
-  const screen = useScreen()
+  const pane = usePane()
   const ref = useRef<HTMLCanvasElement>(null)
   const detailTimeoutRef = useRef<NodeJS.Timeout>()
   useEffect(() => {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
 
-    drawFallLayer(context, screen, 25)
+    drawFallLayer(context, pane, 25)
 
     if (detailTimeoutRef.current) clearTimeout(detailTimeoutRef.current)
     detailTimeoutRef.current = setTimeout(() => {
-      drawFallLayer(context, screen, 5)
+      drawFallLayer(context, pane, 5)
     }, 125)
-  }, [ref, screen])
+  }, [ref, pane])
 
   return <CanvasLayer _ref={ref} style={{ opacity: 0.675 }} />
 }
 
 function drawFallLayer(
   context: CanvasRenderingContext2D,
-  screen: Screen,
+  pane: Pane,
   pixelSize: number,
 ) {
-  for (let xScreen = 0; xScreen < screen.size.x; xScreen += pixelSize) {
-    for (let yScreen = 0; yScreen < screen.size.y; yScreen += pixelSize) {
-      const [xWorld, yWorld] = screenPointToWorldPoint(
-        screen,
-        xScreen + pixelSize / 2,
-        yScreen + pixelSize / 2,
+  for (let xPane = 0; xPane < pane.size.x; xPane += pixelSize) {
+    for (let yPane = 0; yPane < pane.size.y; yPane += pixelSize) {
+      const [xWorld, yWorld] = panePointToWorldPoint(
+        pane,
+        xPane + pixelSize / 2,
+        yPane + pixelSize / 2,
       )
       if (polygonContains(minnesotaLoop, [xWorld, yWorld])) {
         const [nearest] = geokdbush.around(index, xWorld, yWorld, 1)
         context.fillStyle = lookupRgb(nearest.properties.leaves)!
-        context.fillRect(xScreen, yScreen, pixelSize, pixelSize)
+        context.fillRect(xPane, yPane, pixelSize, pixelSize)
       }
     }
   }

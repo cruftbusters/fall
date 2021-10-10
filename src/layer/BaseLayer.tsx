@@ -1,24 +1,21 @@
-import useScreen from '../useScreen'
+import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Screen } from '../Types'
-import {
-  screenPointToWorldPoint,
-  worldPointToScreenPoint,
-} from '../ScreenUtils'
+import { Pane } from '../Types'
+import { panePointToWorldPoint, worldPointToPanePoint } from '../PaneUtils'
 import { useEffect, useRef } from 'react'
 
 export function BaseLayer() {
   const ref = useRef<HTMLCanvasElement>(null)
-  const screen = useScreen()
+  const pane = usePane()
   useEffect(() => {
     if (!ref.current) return
     const context = ref.current.getContext('2d')!
 
-    const [worldLeft, worldTop] = screenPointToWorldPoint(screen, 0, 0)
-    const [worldRight, worldBottom] = screenPointToWorldPoint(
-      screen,
-      screen.size.x,
-      screen.size.y,
+    const [worldLeft, worldTop] = panePointToWorldPoint(pane, 0, 0)
+    const [worldRight, worldBottom] = panePointToWorldPoint(
+      pane,
+      pane.size.x,
+      pane.size.y,
     )
 
     const zoom = 7
@@ -30,19 +27,19 @@ export function BaseLayer() {
     for (let xTile = xTileStart; xTile <= xTileEnd; xTile++) {
       for (let yTile = yTileStart; yTile <= yTileEnd; yTile++) {
         fetchBaseTile(xTile, yTile, zoom).then((image) => {
-          const [screenLeft, screenTop, screenRight, screenBottom] =
-            tileToScreenEnvelope(screen, xTile, yTile, n)
+          const [paneLeft, paneTop, paneRight, paneBottom] =
+            tileToPaneEnvelope(pane, xTile, yTile, n)
           context.drawImage(
             image,
-            screenLeft,
-            screenTop,
-            screenRight - screenLeft,
-            screenBottom - screenTop,
+            paneLeft,
+            paneTop,
+            paneRight - paneLeft,
+            paneBottom - paneTop,
           )
         })
       }
     }
-  }, [ref, screen])
+  }, [ref, pane])
   return <CanvasLayer _ref={ref} />
 }
 
@@ -69,24 +66,24 @@ const fetchBaseTile = (tx: number, ty: number, tz: number) =>
     image.src = `https://mt0.google.com/vt/lyrs=y&hl=en&x=${tx}&y=${ty}&z=${tz}`
   })
 
-const tileToScreenEnvelope = (
-  screen: Screen,
+const tileToPaneEnvelope = (
+  pane: Pane,
   xTile: number,
   yTile: number,
   n: number,
 ) => [
-  ...tileTopLeftToScreenPoint(screen, xTile, yTile, n),
-  ...tileTopLeftToScreenPoint(screen, xTile + 1, yTile + 1, n),
+  ...tileTopLeftToPanePoint(pane, xTile, yTile, n),
+  ...tileTopLeftToPanePoint(pane, xTile + 1, yTile + 1, n),
 ]
 
-const tileTopLeftToScreenPoint = (
-  screen: Screen,
+const tileTopLeftToPanePoint = (
+  pane: Pane,
   xTile: number,
   yTile: number,
   n: number,
 ) =>
-  worldPointToScreenPoint(
-    screen,
+  worldPointToPanePoint(
+    pane,
     (xTile / n) * 360 - 180,
     (Math.atan(Math.sinh(Math.PI * (1 - (2 * yTile) / n))) * 180) /
       Math.PI,
