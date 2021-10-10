@@ -8,13 +8,15 @@ const context = createContext<Pane>({
   size: { x: window.innerWidth, y: window.innerHeight },
 })
 
+interface PaneProviderProps {
+  initialPane: Pane
+  children: ReactNode
+}
+
 export function PaneProvider({
   initialPane,
   children,
-}: {
-  initialPane: Pane
-  children: ReactNode
-}) {
+}: PaneProviderProps) {
   const [pane, setPane] = useState<Pane>(initialPane)
   const size = useWindowSize()
   useEffect(() => setPane((pane) => ({ ...pane, size })), [size])
