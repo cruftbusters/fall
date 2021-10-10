@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react'
+import useScreen from '../useScreen'
 import { CanvasLayer } from './CanvasLayer'
+import { Screen } from '../Types'
 import {
   screenPointToWorldPoint,
   worldPointToScreenPoint,
-} from './ScreenUtils'
-import { Screen } from './Types'
-import useScreen from './useScreen'
+} from '../ScreenUtils'
+import { useEffect, useRef } from 'react'
 
 export function BaseLayer() {
   const ref = useRef<HTMLCanvasElement>(null)

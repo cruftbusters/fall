@@ -1,5 +1,5 @@
+import useScreen from '../useScreen'
 import { CSSProperties, RefObject } from 'react'
-import useScreen from './useScreen'
 
 interface CanvasLayerProps {
   _ref: RefObject<HTMLCanvasElement>

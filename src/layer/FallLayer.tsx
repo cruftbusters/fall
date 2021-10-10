@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react'
-import { Screen } from './Types'
-import { CanvasLayer } from './CanvasLayer'
-import { screenPointToWorldPoint } from './ScreenUtils'
-import { polygonContains } from 'd3-polygon'
-import minnesota from './minnesota.json'
-import snapshot from './latest.json'
 import KDBush from 'kdbush'
 import geokdbush from 'geokdbush'
-import useScreen from './useScreen'
+import minnesota from './minnesota.json'
+import snapshot from './latest.json'
+import useScreen from '../useScreen'
+import { CanvasLayer } from './CanvasLayer'
+import { Screen } from '../Types'
+import { polygonContains } from 'd3-polygon'
+import { screenPointToWorldPoint } from '../ScreenUtils'
+import { useEffect, useRef } from 'react'
 
 const index = new KDBush(
   snapshot.features,

@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
-import { Screen } from './Types'
-import { CanvasLayer } from './CanvasLayer'
-import { worldPointToScreenPoint } from './ScreenUtils'
 import snapshot from './latest.json'
-import useScreen from './useScreen'
+import useScreen from '../useScreen'
+import { CanvasLayer } from './CanvasLayer'
+import { Screen } from '../Types'
+import { useEffect, useRef } from 'react'
+import { worldPointToScreenPoint } from '../ScreenUtils'
 
 export default function StationLayer() {
   const screen = useScreen()
