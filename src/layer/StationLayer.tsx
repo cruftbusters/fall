@@ -19,6 +19,7 @@ export default function StationLayer() {
 }
 
 function drawStationLayer(context: CanvasRenderingContext2D, pane: Pane) {
+  context.clearRect(0, 0, pane.size.x, pane.size.y)
   snapshot.features.forEach(
     ({
       geometry: {
