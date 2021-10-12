@@ -3,7 +3,7 @@ export interface Vector2 {
   y: number
 }
 
-export interface Pane {
+export interface PaneState {
   center: Vector2
   zoom: number
   size: Vector2

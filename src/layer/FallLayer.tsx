@@ -4,7 +4,7 @@ import minnesota from './minnesota.json'
 import snapshot from './latest.json'
 import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Pane } from '../Types'
+import { PaneState } from '../Types'
 import { panePointToWorldPoint } from '../PaneUtils'
 import { polygonContains } from 'd3-polygon'
 import { useEffect, useRef } from 'react'
@@ -41,7 +41,7 @@ export default function FallLayer() {
 
 function drawFallLayer(
   context: CanvasRenderingContext2D,
-  pane: Pane,
+  pane: PaneState,
   pixelSize: number,
 ) {
   for (let xPane = 0; xPane < pane.size.x; xPane += pixelSize) {

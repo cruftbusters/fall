@@ -3,14 +3,14 @@ import StationLayer from './layer/StationLayer'
 import snapshot from './layer/latest.json'
 import { BaseLayer } from './layer/BaseLayer'
 import { PaneProvider } from './usePane'
-import { paneFromPoints } from './PaneUtils'
 import { Vector2 } from './Types'
+import { paneStateFromPoints } from './PaneUtils'
 
 function App() {
   return (
     <PaneProvider
-      getInitialPane={(size: Vector2) =>
-        paneFromPoints(
+      getInitialPaneState={(size: Vector2) =>
+        paneStateFromPoints(
           size,
           snapshot.features,
           (it) => it.geometry.coordinates[0],

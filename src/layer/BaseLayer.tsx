@@ -1,6 +1,6 @@
 import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Pane } from '../Types'
+import { PaneState } from '../Types'
 import { panePointToWorldPoint, worldPointToPanePoint } from '../PaneUtils'
 import { useEffect, useRef } from 'react'
 
@@ -67,7 +67,7 @@ const fetchBaseTile = (tx: number, ty: number, tz: number) =>
   })
 
 const tileToPaneEnvelope = (
-  pane: Pane,
+  pane: PaneState,
   xTile: number,
   yTile: number,
   n: number,
@@ -77,7 +77,7 @@ const tileToPaneEnvelope = (
 ]
 
 const tileTopLeftToPanePoint = (
-  pane: Pane,
+  pane: PaneState,
   xTile: number,
   yTile: number,
   n: number,

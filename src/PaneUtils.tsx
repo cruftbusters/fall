@@ -1,6 +1,6 @@
-import { Pane, Vector2 } from './Types'
+import { PaneState, Vector2 } from './Types'
 
-export function paneFromPoints<PointType>(
+export function paneStateFromPoints<PointType>(
   size: Vector2,
   points: Array<PointType>,
   fx: (point: PointType) => number,
@@ -23,11 +23,11 @@ export function paneFromPoints<PointType>(
       0.975,
     ),
     size,
-  } as Pane
+  } as PaneState
 }
 
 export function panePointToWorldPoint(
-  { size, zoom, center }: Pane,
+  { size, zoom, center }: PaneState,
   x: number,
   y: number,
 ) {
@@ -38,7 +38,7 @@ export function panePointToWorldPoint(
 }
 
 export function worldPointToPanePoint(
-  { size, zoom, center }: Pane,
+  { size, zoom, center }: PaneState,
   a: number,
   b: number,
 ) {

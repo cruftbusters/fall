@@ -1,7 +1,7 @@
 import snapshot from './latest.json'
 import usePane from '../usePane'
 import { CanvasLayer } from './CanvasLayer'
-import { Pane } from '../Types'
+import { PaneState } from '../Types'
 import { useEffect, useRef } from 'react'
 import { worldPointToPanePoint } from '../PaneUtils'
 
@@ -18,7 +18,10 @@ export default function StationLayer() {
   return <CanvasLayer _ref={ref} />
 }
 
-function drawStationLayer(context: CanvasRenderingContext2D, pane: Pane) {
+function drawStationLayer(
+  context: CanvasRenderingContext2D,
+  pane: PaneState,
+) {
   context.clearRect(0, 0, pane.size.x, pane.size.y)
   snapshot.features.forEach(
     ({

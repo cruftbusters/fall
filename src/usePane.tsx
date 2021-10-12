@@ -1,34 +1,36 @@
-import { Pane, Vector2 } from './Types'
+import { PaneState, Vector2 } from './Types'
 import { ReactNode, useContext, useEffect, useState } from 'react'
 import { createContext } from 'react'
 
-const defaultPane = {
+const defaultPaneState = {
   center: { x: 0, y: 0 },
   zoom: 1,
   size: { x: window.innerWidth, y: window.innerHeight },
 }
 
-const context = createContext<Pane>(defaultPane)
+const context = createContext<PaneState>(defaultPaneState)
 
 interface PaneProviderProps {
-  getInitialPane: (size: Vector2) => Pane
+  getInitialPaneState: (size: Vector2) => PaneState
   children: ReactNode
 }
 
 export function PaneProvider({
-  getInitialPane,
+  getInitialPaneState,
   children,
 }: PaneProviderProps) {
-  const [pane, setPane] = useState<Pane>(defaultPane)
+  const [paneState, setPaneState] = useState<PaneState>(defaultPaneState)
   const size = useWindowSize()
   useEffect(
     () =>
-      setPane((pane) =>
-        pane === defaultPane ? getInitialPane(size) : { ...pane, size },
+      setPaneState((pane) =>
+        pane === defaultPaneState
+          ? getInitialPaneState(size)
+          : { ...pane, size },
       ),
-    [getInitialPane, size],
+    [getInitialPaneState, size],
   )
-  return <context.Provider value={pane} children={children} />
+  return <context.Provider value={paneState} children={children} />
 }
 
 function useWindowSize() {
