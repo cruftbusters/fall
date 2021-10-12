@@ -2,13 +2,13 @@ import FallLayer from './layer/FallLayer'
 import StationLayer from './layer/StationLayer'
 import snapshot from './layer/latest.json'
 import { BaseLayer } from './layer/BaseLayer'
-import { PaneProvider } from './usePane'
+import { Pane } from './usePane'
 import { Vector2 } from './Types'
 import { paneStateFromPoints } from './PaneUtils'
 
 function App() {
   return (
-    <PaneProvider
+    <Pane
       getInitialPaneState={(size: Vector2) =>
         paneStateFromPoints(
           size,
@@ -21,7 +21,7 @@ function App() {
       <BaseLayer />
       <FallLayer />
       <StationLayer />
-    </PaneProvider>
+    </Pane>
   )
 }
 

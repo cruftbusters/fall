@@ -15,7 +15,7 @@ interface PaneProviderProps {
   children: ReactNode
 }
 
-export function PaneProvider({
+export function Pane({
   getInitialPaneState,
   children,
 }: PaneProviderProps) {
