@@ -6,6 +6,9 @@ export function paneStateFromPoints<PointType>(
   fx: (point: PointType) => number,
   fy: (point: PointType) => number,
 ) {
+  if (size.x === 0) throw Error('Zero width is invalid')
+  if (size.y === 0) throw Error('Zero height is invalid')
+
   const xs = points.map(fx)
   const ys = points.map(fy)
   const left = Math.min(...xs)
