@@ -20,20 +20,7 @@ export function Pane({
   children,
 }: PaneProviderProps) {
   const [paneState, setPaneState] = useState<PaneState>(defaultPaneState)
-  const size = useWindowSize()
-  useEffect(
-    () =>
-      setPaneState((pane) =>
-        pane === defaultPaneState
-          ? getInitialPaneState(size)
-          : { ...pane, size },
-      ),
-    [getInitialPaneState, size],
-  )
-  return <context.Provider value={paneState} children={children} />
-}
 
-function useWindowSize() {
   const [size, setSize] = useState<Vector2>({
     x: window.innerWidth,
     y: window.innerHeight,
@@ -50,7 +37,17 @@ function useWindowSize() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  return size
+  useEffect(
+    () =>
+      setPaneState((pane) =>
+        pane === defaultPaneState
+          ? getInitialPaneState(size)
+          : { ...pane, size },
+      ),
+    [getInitialPaneState, size],
+  )
+
+  return <context.Provider value={paneState} children={children} />
 }
 
 export default function usePane() {
